@@ -925,7 +925,10 @@ def java_path_and_version(java_path):
     command = [java_path, '-version']
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, _ = process.communicate()
-    version = out.decode().split('java version ')[-1].split()[0].replace('"', '')
+
+    # more flexible version string
+    version = re.match(r'^.* version[ \'"]+([^ \'"]+).*$', out.decode(), re.MULTILINE)
+    version = version.group(1) if version else ''
 
     # Make sure Java is 1.7+
     try:

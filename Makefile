@@ -57,7 +57,7 @@ endif
 
 
 # CXXFLAGS can be overridden by the user.
-CXXFLAGS    ?= -Wall -Wextra -pedantic -march=native
+CXXFLAGS    ?= -Wall -Wextra -pedantic -mtune=core2
 
 
 # These flags are required for the build to work.
