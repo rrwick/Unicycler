@@ -6,14 +6,14 @@ x 1. instead of raising a CannotPolish() create a new object called cannot calcu
 x 3. wrap the subprocess.call in get_short_read_depth() in a try
 4. make sure all intermediate files used in read depth calculation are deleted
 x 5. make sure depth_alignments.bam is place in the outs directory
-6. make sure depth.tsv is placed in the outs directory
+x 6. make sure depth.tsv is placed in the outs directory
 """
-
 
 
 import csv
 import sys
 import os
+import glob
 import subprocess
 from .unicycler_align import load_references
 from .cpp_wrappers import minimap_align_reads
@@ -37,7 +37,7 @@ def get_read_depth(final_fasta, args):
 
     if short_reads_available:
         bam_filename = get_short_read_alignments(final_fasta, args)
-        short_read_depth = get_short_read_depth(bam_filename)
+        short_read_depth = get_short_read_depth(bam_filename, args)
         short_read_depth = round(short_read_depth, 2)
         log.log('Short read depth:   ' + str(short_read_depth))
 
@@ -52,11 +52,11 @@ def get_read_depth(final_fasta, args):
         log.log('Total read depth:   ' + str(total_read_depth))
 
 
-def get_short_read_depth(bam_filename):
+def get_short_read_depth(bam_filename, args):
     """
     this command will generate a 3 column tsv: contig, contig_pos, depth
     """
-    depth_tsv_file = 'depth.tsv'
+    depth_tsv_file = os.path.join(args.out, 'depth.tsv')
     samtools_depth_command = ['samtools', 'depth', '-a', bam_filename]
 
     try:
@@ -73,6 +73,25 @@ def get_short_read_depth(bam_filename):
     for row in depth_tsv:
         depth_at_bases_sum += int(row[2])
         total_ref_length += 1
+
+    # rm depth.tsv file
+    try:
+        os.remove(depth_tsv_file)
+    except FileNotFoundError:
+        pass
+
+    # rm short read alignments bam
+    try:
+        os.remove(bam_filename)
+    except FileNotFoundError:
+        pass
+
+    # rm short read alignments bam index
+    try:
+        os.remove(bam_filename + ".bai")
+    except FileNotFoundError:
+        pass
+
     return depth_at_bases_sum / total_ref_length
 
 
@@ -125,9 +144,16 @@ def get_short_read_alignments(final_fasta, args):
     except FileNotFoundError:
         pass
 
+    # rm .bt2 files
+    bowtie2_old_files = glob.glob(os.path.join(args.out, "assembly.fasta.*.bt2"))
+    for file in bowtie2_old_files:
+        try:
+            os.remove(file)
+        except FileNotFoundError:
+            pass
+
     # index the alignments
     samtools_index_command = [args.samtools_path, 'index', bam_filename]
-    # log.log(dim('  ' + ' '.join(samtools_index_command)), 2)
     try:
         subprocess.check_output(samtools_index_command, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
