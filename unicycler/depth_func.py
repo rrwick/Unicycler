@@ -149,7 +149,6 @@ def get_short_read_alignments(final_fasta, args):
 
 
 def get_long_read_alignments(final_fasta, reads_fastq, threads):
-    log.log(str(final_fasta) + "  " + str(reads_fastq))
     minimap_alignments_str = minimap_align_reads(final_fasta, reads_fastq, threads, 0, 'default')
     minimap_alignments = load_minimap_alignments(minimap_alignments_str)
     return minimap_alignments
