@@ -1,15 +1,3 @@
-"""
-TODO:
-x 1. instead of raising a CannotPolish() create a new object called cannot calculate depth
-2. test on lab uti dataset using 3 scenarios (hybrid, long read, short reads)
-    - verify proper dependencies in each of the three cases
-x 3. wrap the subprocess.call in get_short_read_depth() in a try
-4. make sure all intermediate files used in read depth calculation are deleted
-x 5. make sure depth_alignments.bam is place in the outs directory
-x 6. make sure depth.tsv is placed in the outs directory
-"""
-
-
 import csv
 import sys
 import os
@@ -107,8 +95,6 @@ def get_short_read_alignments(final_fasta, args):
         subprocess.check_output(bowtie2_build_command, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         raise CannotCalculateDepth('bowtie2-build encountered an error:\n' + e.output.decode())
-    # if not any(x.endswith('.bt2') for x in os.listdir(polish_dir)):
-    #     raise CannotPolish('bowtie2-build failed to build an index')
 
     # run the alignments
     sam_filename = os.path.join(args.out, 'depth_alignments.sam')
@@ -132,7 +118,7 @@ def get_short_read_alignments(final_fasta, args):
     bam_filename = os.path.join(args.out, 'depth_alignments.bam')
     samtools_sort_command = [args.samtools_path, 'sort', '-@', str(args.threads),
                              '-o', bam_filename, '-O', 'bam', '-T', 'temp', sam_filename]
-    # log.log(dim('  ' + ' '.join(samtools_sort_command)), 2)
+
     try:
         subprocess.check_output(samtools_sort_command, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
