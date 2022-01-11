@@ -47,6 +47,7 @@ from .vcf_func import make_vcf
 from . import log
 from . import settings
 from .version import __version__
+from .depth_func import get_read_depth
 
 
 def main():
@@ -221,6 +222,9 @@ def main():
     final_assembly_gfa = os.path.join(args.out, 'assembly.gfa')
     graph.save_to_gfa(final_assembly_gfa)
     graph.save_to_fasta(final_assembly_fasta, min_length=args.min_fasta_length)
+
+    # Align reads to assembly.fasta and report depth
+    get_read_depth(final_assembly_fasta, args)
 
     if args.vcf and short_reads_available:
         final_assembly_vcf = os.path.join(args.out, 'assembly.vcf')
@@ -762,8 +766,13 @@ def check_dependencies(args, short_reads_available, long_reads_available):
 
     if not short_reads_available:
         spades_path, spades_version, spades_status = '', '', 'not used'
+        bowtie2_build_path, bowtie2_build_version, bowtie2_build_status = '', '', 'not used'
+        bowtie2_path, bowtie2_version, bowtie2_status = '', '', 'not used'
     else:
         spades_path, spades_version, spades_status = spades_path_and_version(args.spades_path)
+        bowtie2_build_path, bowtie2_build_version, bowtie2_build_status = \
+            bowtie2_build_path_and_version(args.bowtie2_build_path)
+        bowtie2_path, bowtie2_version, bowtie2_status = bowtie2_path_and_version(args.bowtie2_path)
     spades_row = ['spades.py', spades_version, spades_status]
     if args.verbosity > 1:
         spades_row.append(spades_path)
@@ -795,19 +804,20 @@ def check_dependencies(args, short_reads_available, long_reads_available):
     program_table.append(makeblastdb_row)
     program_table.append(tblastn_row)
 
+    # previously bowtie2 and bowtie2-build weren't require if --no-pilon
+    # but calculating read depth requires bowtie to align short reads if
+    # available
+    if not short_reads_available:
+        samtools_path, samtools_version, samtools_status = '', '', 'not used'
+    else:
+        samtools_path, samtools_version, samtools_status = \
+            samtools_path_and_version(args.samtools_path)
+
     # Polishing dependencies
     if args.no_pilon or not short_reads_available:
-        bowtie2_build_path, bowtie2_build_version, bowtie2_build_status = '', '', 'not used'
-        bowtie2_path, bowtie2_version, bowtie2_status = '', '', 'not used'
-        samtools_path, samtools_version, samtools_status = '', '', 'not used'
         java_path, java_version, java_status = '', '', 'not used'
         pilon_path, pilon_version, pilon_status = '', '', 'not used'
     else:
-        bowtie2_build_path, bowtie2_build_version, bowtie2_build_status = \
-            bowtie2_build_path_and_version(args.bowtie2_build_path)
-        bowtie2_path, bowtie2_version, bowtie2_status = bowtie2_path_and_version(args.bowtie2_path)
-        samtools_path, samtools_version, samtools_status = \
-            samtools_path_and_version(args.samtools_path)
         java_path, java_version, java_status = java_path_and_version(args.java_path)
         pilon_path, pilon_version, pilon_status = \
             pilon_path_and_version(args.pilon_path, args.java_path, args)

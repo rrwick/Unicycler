@@ -72,6 +72,11 @@ class MinimapAlignment(object):
             self.read_end_gap = self.read_length - self.read_end
             self.ref_end_gap = self.ref_length - self.ref_end
 
+
+    def get_read_length(self):
+        return self.read_length
+
+
     def get_concise_string(self):
         return ','.join([str(x) for x in [self.read_start, self.read_end, self.read_strand,
                                           self.ref_name, self.ref_start, self.ref_end]])
