@@ -230,12 +230,12 @@ def round_to_nearest_odd(num):
 def get_compression_type(filename):
     """
     Attempts to guess the compression (if any) on a file using the first few bytes.
-    http://stackoverflow.com/questions/13044562
+    https://stackoverflow.com/questions/13044562
     """
-    magic_dict = {'gz': (b'\x1f', b'\x8b', b'\x08'),
-                  'bz2': (b'\x42', b'\x5a', b'\x68'),
-                  'zip': (b'\x50', b'\x4b', b'\x03', b'\x04')}
-    max_len = max(len(x) for x in magic_dict)
+    magic_dict = {'gz': b'\x1f\x8b\x08',
+                  'bz2': b'\x42\x5a\x68',
+                  'zip': b'\x50\x4b\x03\x04'}
+    max_len = max(len(x) for x in magic_dict.values())
     with open(filename, 'rb') as unknown_file:
         file_start = unknown_file.read(max_len)
     compression_type = 'plain'
