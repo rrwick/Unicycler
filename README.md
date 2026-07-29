@@ -13,7 +13,7 @@ And read about how we use it to complete bacterial genomes here:
 
 # Table of contents
 
-* [2022 update](#2022-update)
+* [2026 update: project status and future plans](#2026-update-project-status-and-future-plans)
 * [Introduction](#introduction)
 * [Requirements](#requirements)
 * [Installation](#installation)
@@ -59,17 +59,16 @@ And read about how we use it to complete bacterial genomes here:
 
 
 
-# 2022 update
+# 2026 update: project status and future plans
 
 Unicycler was initially made in 2016, back when long reads could be sparse and very noisy. For example, our early Oxford Nanopore sequencing runs might generate only 15× read depth for a single bacterial isolate, and most of the reads had a _lot_ of errors. So Unicycler was designed to use low-depth and low-accuracy long reads to scaffold a short-read assembly graph to completion, an approach I call short-read-first hybrid assembly. Assuming the short-read assembly graph is in good shape, Unicycler does this quite well!
 
-However, things have changed in the last six years. Nanopore sequencing yield is now much higher, making >100× depth easy to obtain, even on multiplexed runs. Read accuracy has also improved and continues to get better each year. High-depth and high-accuracy long reads make long-read-first hybrid assembly (long-read assembly followed by short-read polishing) a viable approach that's often preferable to Unicycler. I have developed [Trycycler](https://github.com/rrwick/Trycycler/wiki) and [Polypolish](https://github.com/rrwick/Polypolish/wiki) in the pursuit of ideal long-read-first assemblies.
+However, things have changed since then. Nanopore sequencing yield is now much higher, making >100× depth obtainable, even on multiplexed runs. Read accuracy has improved significantly and is now less of a limitation. High-depth and high-accuracy long reads make long-read-first hybrid assembly (long-read assembly followed by short-read polishing) a viable approach that's often preferable to Unicycler. I have developed [Autocycler](https://github.com/rrwick/Autocycler/wiki) and [Polypolish](https://github.com/rrwick/Polypolish/wiki) in the pursuit of ideal long-read-first assemblies.
 
-Unicycler is not completely out-of-date, as it is still (in my opinion) the best tool for short-read-first hybrid assembly of bacterial genomes. But I think it should only be used for hybrid assembly when long-read-first is not an option – i.e. when long-read depth is low. I also think that Unicycler is good for short-read-only bacterial genomes, as it produces cleaner assembly graphs than SPAdes alone. So while Unicycler doesn't get a lot of my time and attention these days, I don't yet consider it to be abandonware.
+Unicycler is still (in my opinion) the best tool for short-read-first hybrid assembly of bacterial genomes. But I think it should only be used for hybrid assembly when long-read-first is not an option, i.e. when long-read depth is low. I also think that Unicycler is good for short-read-only bacterial genomes, as it produces cleaner assembly graphs than SPAdes alone. Recent Unicycler releases have focused on compatibility rather than new features.
 
-For some up-to-date bacterial genome assembly tips, check out these parts of Trycycler's wiki:
-* [Should I use Unicycler or Trycycler to assemble my bacterial genome?](https://github.com/rrwick/Trycycler/wiki/FAQ-and-miscellaneous-tips#should-i-use-unicycler-or-trycycler-to-assemble-my-bacterial-genome)
-* [Guide to bacterial genome assembly](https://github.com/rrwick/Trycycler/wiki/Guide-to-bacterial-genome-assembly)
+The next phase of the project is a major rewrite: Unicycler 2. This will be a new Rust codebase in a separate repository. It will build its own de Bruijn graph from short reads, long reads or both, rather than relying on SPAdes. By tracking read paths during graph construction, it should be better able to recover sequence missing from patchy short-read data and resolve repeats without carrying short-read contig errors into the final assembly. Its graph-cleaning steps will be modular, making it easier to adapt the assembler to different data types and sequencing technologies. Stay tuned for more news on this project!
+
 
 
 
