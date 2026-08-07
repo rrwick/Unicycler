@@ -616,7 +616,7 @@ def finalise_bridge(all_args):
 
 
 def reduce_expected_count(expected_count, a, b):
-    """
+    r"""
     This function reduces the expected read count. It reduces by a factor which is a function of
     the read count, so low expected values aren't reduced much, but high expected values are
     reduced more. This is to help with high read depth cases where expected counts get quite high.

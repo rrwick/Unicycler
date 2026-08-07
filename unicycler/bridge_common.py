@@ -40,7 +40,7 @@ def get_bridge_str(bridge):
 
 
 def get_depth_agreement_factor(start_seg_depth, end_seg_depth):
-    """
+    r"""
     This function is set up such that:
       * equal depths return 1.0
       * similar depths return a value near 1.0

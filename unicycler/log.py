@@ -191,4 +191,4 @@ def remove_formatting(text):
 
 
 def remove_dim_formatting(text):
-    return re.sub('\033\[2m', '', text)
+    return re.sub('\033\\[2m', '', text)
