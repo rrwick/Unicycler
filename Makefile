@@ -68,7 +68,7 @@ CXXFLAGS    ?= -Wall -Wextra -pedantic -mtune=native
 
 # These flags are required for the build to work.
 FLAGS        = -std=c++14 -Iunicycler/include -fPIC
-LDFLAGS      = -shared -lz
+LDFLAGS      += -shared -lz
 
 
 # Platform-specific stuff (for Seqan)
@@ -117,4 +117,4 @@ distclean: clean
 	$(RM) $(TARGET)
 
 %.o: %.cpp $(HEADERS)
-	$(CXX) $(FLAGS) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(FLAGS) $(CXXFLAGS) -c -o $@ $<
